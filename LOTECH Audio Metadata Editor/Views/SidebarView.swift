@@ -1,0 +1,37 @@
+import SwiftUI
+
+struct SidebarView: View {
+    @ObservedObject var viewModel: MainViewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Audio Metadata Editor")
+                    .font(.title3.weight(.semibold))
+                Text("by LOTECH Co.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 14)
+
+            Button(action: viewModel.openFolder) {
+                Label("Open Folder", systemImage: "folder.badge.plus")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.bordered)
+            .padding(.horizontal, 12)
+
+            List(selection: $viewModel.selectedItemID) {
+                Section("Library") {
+                    OutlineGroup(viewModel.libraryItems, children: \.children) { item in
+                        Label(item.name, systemImage: item.kind.systemImageName)
+                            .tag(item.id)
+                    }
+                }
+            }
+            .listStyle(.sidebar)
+        }
+        .navigationSplitViewColumnWidth(min: 260, ideal: 290)
+    }
+}
