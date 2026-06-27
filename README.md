@@ -54,7 +54,7 @@ Future versions may add optional AI-assisted metadata suggestions, but users wil
 
 Version: `1.1.0`
 
-The current version adds Batch Edit mode for table-based metadata editing across supported files in an opened folder.
+The current version adds Batch Edit mode for table-based metadata editing, selected-row batch field changes, sortable columns, and folder-scoped editing.
 
 ## Known limitations
 

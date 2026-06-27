@@ -10,18 +10,40 @@ final class MainViewModel: ObservableObject {
                 return
             }
 
-            if detailMode == .batchEdit,
-               selectedItemID != nil,
-               hasUnsavedBatchChanges {
-                pendingBatchExitSelectionID = selectedItemID
-                isRestoringSelection = true
-                selectedItemID = oldValue
-                isRestoringSelection = false
-                isShowingBatchExitAlert = true
-                return
-            }
+            if detailMode == .batchEdit, let selectedItemID {
+                guard let selectedItem else {
+                    updateMetadataForSelection()
+                    return
+                }
 
-            if selectedItemID != nil {
+                if case .folder = selectedItem.kind {
+                    if hasUnsavedBatchChanges {
+                        pendingBatchFolderSelectionID = selectedItemID
+                        isRestoringSelection = true
+                        self.selectedItemID = oldValue
+                        isRestoringSelection = false
+                        isShowingBatchExitAlert = true
+                        return
+                    }
+
+                    selectedBatchFolderID = selectedItemID
+                    prepareBatchRows()
+                    loadBatchMetadata()
+                    return
+                }
+
+                if hasUnsavedBatchChanges {
+                    pendingBatchExitSelectionID = selectedItemID
+                    isRestoringSelection = true
+                    self.selectedItemID = oldValue
+                    isRestoringSelection = false
+                    isShowingBatchExitAlert = true
+                    return
+                }
+
+                detailMode = .singleFile
+                batchLoadTask?.cancel()
+            } else if selectedItemID != nil {
                 detailMode = .singleFile
                 batchLoadTask?.cancel()
             }
@@ -34,6 +56,7 @@ final class MainViewModel: ObservableObject {
     @Published var metadata = AudioMetadata.sample
     @Published var batchRows: [BatchMetadataRow] = []
     @Published var selectedBatchRowIDs: Set<BatchMetadataRow.ID> = []
+    @Published private(set) var selectedBatchFolderID: AudioLibraryItem.ID?
     @Published var isShowingBatchExitAlert = false
     @Published private(set) var statusMessage = "Ready"
     @Published private(set) var isScanning = false
@@ -61,6 +84,7 @@ final class MainViewModel: ObservableObject {
     private var didStartSecurityScopedFolderAccess = false
     private var isRestoringSelection = false
     private var pendingBatchExitSelectionID: AudioLibraryItem.ID?
+    private var pendingBatchFolderSelectionID: AudioLibraryItem.ID?
     private var shouldLeaveBatchEditWithoutSelection = false
 
     deinit {
@@ -168,7 +192,10 @@ final class MainViewModel: ObservableObject {
 
         detailMode = .batchEdit
         metadataReadTask?.cancel()
-        selectedItemID = nil
+        selectedBatchFolderID = selectedItemFolderID ?? libraryItems.first?.id
+        isRestoringSelection = true
+        selectedItemID = selectedBatchFolderID
+        isRestoringSelection = false
         failedMetadataField = nil
         didFailArtworkSave = false
         prepareBatchRows()
@@ -209,6 +236,7 @@ final class MainViewModel: ObservableObject {
 
     func cancelBatchExit() {
         pendingBatchExitSelectionID = nil
+        pendingBatchFolderSelectionID = nil
         shouldLeaveBatchEditWithoutSelection = false
         isShowingBatchExitAlert = false
     }
@@ -285,7 +313,8 @@ final class MainViewModel: ObservableObject {
     private func prepareBatchRows() {
         batchLoadTask?.cancel()
         selectedBatchRowIDs = []
-        batchRows = libraryItems.audioFilesForBatchEditing().map(BatchMetadataRow.init(audioFile:))
+        let batchFolder = selectedBatchFolder ?? libraryItems.first
+        batchRows = batchFolder?.directAudioFilesForBatchEditing().map(BatchMetadataRow.init(audioFile:)) ?? []
 
         if batchRows.isEmpty {
             statusMessage = "No supported audio files in this folder"
@@ -335,9 +364,23 @@ final class MainViewModel: ObservableObject {
     }
 
     private func leaveBatchEditAfterResolvingDrafts() {
+        if let pendingBatchFolderSelectionID {
+            self.pendingBatchFolderSelectionID = nil
+            pendingBatchExitSelectionID = nil
+            isShowingBatchExitAlert = false
+            selectedBatchFolderID = pendingBatchFolderSelectionID
+            isRestoringSelection = true
+            selectedItemID = pendingBatchFolderSelectionID
+            isRestoringSelection = false
+            prepareBatchRows()
+            loadBatchMetadata()
+            return
+        }
+
         if shouldLeaveBatchEditWithoutSelection {
             shouldLeaveBatchEditWithoutSelection = false
             pendingBatchExitSelectionID = nil
+            pendingBatchFolderSelectionID = nil
             isShowingBatchExitAlert = false
             batchLoadTask?.cancel()
             detailMode = .singleFile
@@ -353,6 +396,7 @@ final class MainViewModel: ObservableObject {
         }
 
         self.pendingBatchExitSelectionID = nil
+        pendingBatchFolderSelectionID = nil
         isShowingBatchExitAlert = false
         detailMode = .singleFile
         selectedItemID = pendingBatchExitSelectionID
@@ -576,6 +620,7 @@ final class MainViewModel: ObservableObject {
         isBatchSaving = false
         batchRows = []
         selectedBatchRowIDs = []
+        selectedBatchFolderID = nil
         isScanning = true
         statusMessage = "Scanning folder"
         let folderBrowserService = FolderBrowserService()
@@ -592,8 +637,16 @@ final class MainViewModel: ObservableObject {
                     return
                 }
 
-                libraryItems = [rootItem]
-                selectedItemID = selectAfterLoad
+                if detailMode == .batchEdit {
+                    libraryItems = [rootItem]
+                    selectedBatchFolderID = rootItem.id
+                    isRestoringSelection = true
+                    selectedItemID = rootItem.id
+                    isRestoringSelection = false
+                } else {
+                    libraryItems = [rootItem]
+                    selectedItemID = selectAfterLoad
+                }
                 lastSavedMetadata = nil
                 isScanning = false
                 if detailMode == .batchEdit {
@@ -647,29 +700,42 @@ final class MainViewModel: ObservableObject {
     }
 }
 
-private extension Array where Element == AudioLibraryItem {
-    func audioFilesForBatchEditing() -> [AudioFile] {
-        flatMap(\.audioFilesForBatchEditing)
-            .filter(\.supportsMetadataWriting)
-            .sorted { lhs, rhs in
-                lhs.fileName.localizedStandardCompare(rhs.fileName) == .orderedAscending
-            }
+private extension MainViewModel {
+    var selectedItemFolderID: AudioLibraryItem.ID? {
+        guard let selectedItemID, let item = libraryItems.firstItem(withID: selectedItemID) else {
+            return nil
+        }
+
+        guard case .folder = item.kind else {
+            return nil
+        }
+
+        return selectedItemID
     }
 
+    var selectedBatchFolder: AudioLibraryItem? {
+        guard let selectedBatchFolderID else {
+            return nil
+        }
+
+        return libraryItems.firstItem(withID: selectedBatchFolderID)
+    }
+}
+
+private extension Array where Element == AudioLibraryItem {
     func foldersOnly() -> [AudioLibraryItem] {
         compactMap(\.folderOnlyItem)
     }
 }
 
 private extension AudioLibraryItem {
-    var audioFilesForBatchEditing: [AudioFile] {
-        let childFiles = children?.flatMap(\.audioFilesForBatchEditing) ?? []
-
-        guard let audioFile else {
-            return childFiles
-        }
-
-        return childFiles + [audioFile]
+    func directAudioFilesForBatchEditing() -> [AudioFile] {
+        (children ?? [])
+            .compactMap(\.audioFile)
+            .filter(\.supportsMetadataWriting)
+            .sorted { lhs, rhs in
+                lhs.fileName.localizedStandardCompare(rhs.fileName) == .orderedAscending
+            }
     }
 
     var folderOnlyItem: AudioLibraryItem? {

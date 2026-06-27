@@ -7,6 +7,9 @@
 - Added a table-based metadata editor for supported writable audio files.
 - Added draft tracking, discard, reload, and save controls for batch edits.
 - Added a prompt before leaving Batch Edit with unsaved changes.
+- Added spreadsheet-style sorting to the Batch Edit table.
+- Added right-click batch field editing for selected rows.
+- Changed Batch Edit folder selection to show only direct writable audio files in the selected folder.
 - Kept v1.0.0 single-file editing behavior intact.
 
 ## 1.0.0

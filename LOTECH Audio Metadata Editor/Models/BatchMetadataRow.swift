@@ -1,5 +1,32 @@
 import Foundation
 
+enum BatchMetadataField: String, CaseIterable, Identifiable, Sendable {
+    case title
+    case artist
+    case album
+    case releaseYear
+    case genre
+
+    var id: String {
+        rawValue
+    }
+
+    var displayName: String {
+        switch self {
+        case .title:
+            "Title"
+        case .artist:
+            "Artist"
+        case .album:
+            "Album"
+        case .releaseYear:
+            "Year"
+        case .genre:
+            "Genre"
+        }
+    }
+}
+
 struct BatchMetadataRow: Identifiable, Hashable, Sendable {
     enum Status: Hashable, Sendable {
         case pending
@@ -103,5 +130,35 @@ struct BatchMetadataRow: Identifiable, Hashable, Sendable {
         metadata.releaseYear = releaseYear
         metadata.genre = genre
         return metadata
+    }
+
+    func value(for field: BatchMetadataField) -> String {
+        switch field {
+        case .title:
+            title
+        case .artist:
+            artist
+        case .album:
+            album
+        case .releaseYear:
+            releaseYear
+        case .genre:
+            genre
+        }
+    }
+
+    mutating func setValue(_ value: String, for field: BatchMetadataField) {
+        switch field {
+        case .title:
+            title = value
+        case .artist:
+            artist = value
+        case .album:
+            album = value
+        case .releaseYear:
+            releaseYear = value
+        case .genre:
+            genre = value
+        }
     }
 }
