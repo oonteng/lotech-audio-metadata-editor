@@ -4,6 +4,12 @@ A simple macOS audio metadata editor built for everyday users who want to clean 
 
 This app is part of the **LOTECH** project: small, practical tools built to reduce friction, automate boring work, and help one person operate with more leverage.
 
+## Part of the LOTECH family
+
+This application is part of the LOTECH family of practical software tools.
+
+LOTECH is a growing collection of thoughtfully designed utilities that help people accomplish everyday tasks with less friction. Each tool is intended to be simple, local-first where possible, and useful without unnecessary complexity.
+
 ## What it does
 
 LOTECH Audio Metadata Editor lets you view and edit common audio metadata such as:
