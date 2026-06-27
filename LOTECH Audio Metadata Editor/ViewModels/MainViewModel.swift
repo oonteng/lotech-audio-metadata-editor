@@ -202,6 +202,10 @@ final class MainViewModel: ObservableObject {
         loadBatchMetadata()
     }
 
+    func showSingleEdit() {
+        leaveBatchEdit()
+    }
+
     func leaveBatchEdit() {
         guard detailMode == .batchEdit else {
             return

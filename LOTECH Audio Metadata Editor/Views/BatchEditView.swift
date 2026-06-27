@@ -7,7 +7,7 @@ struct BatchEditView: View {
         let field: BatchMetadataField
     }
 
-    private enum SortColumn: String {
+    private enum SortColumn: String, CaseIterable {
         case file
         case title
         case artist
@@ -15,6 +15,53 @@ struct BatchEditView: View {
         case releaseYear
         case genre
         case status
+
+        var title: String {
+            switch self {
+            case .file:
+                "File"
+            case .title:
+                "Title"
+            case .artist:
+                "Artist"
+            case .album:
+                "Album"
+            case .releaseYear:
+                "Year"
+            case .genre:
+                "Genre"
+            case .status:
+                "Status"
+            }
+        }
+
+        var defaultWidth: CGFloat {
+            switch self {
+            case .file:
+                320
+            case .title, .artist, .album:
+                190
+            case .releaseYear:
+                90
+            case .genre, .status:
+                150
+            }
+        }
+
+        var minimumWidth: CGFloat {
+            switch self {
+            case .file:
+                180
+            case .releaseYear:
+                70
+            default:
+                110
+            }
+        }
+
+        static var defaultWidths: [SortColumn: CGFloat] {
+            Dictionary(uniqueKeysWithValues: allCases.map { ($0, $0.defaultWidth) })
+        }
     }
 
     @Binding var rows: [BatchMetadataRow]
@@ -25,10 +72,11 @@ struct BatchEditView: View {
     let onSave: () -> Void
     let onDiscard: () -> Void
     let onReload: () -> Void
-    let onDone: () -> Void
 
     @State private var sortColumn: SortColumn = .file
     @State private var isSortAscending = true
+    @State private var columnWidths = SortColumn.defaultWidths
+    @State private var resizeStartWidths: [SortColumn: CGFloat] = [:]
     @State private var lastSelectedRowID: BatchMetadataRow.ID?
     @State private var batchEditTarget: BatchEditTarget?
     @State private var batchEditValue = ""
@@ -70,15 +118,9 @@ struct BatchEditView: View {
             }
             .buttonStyle(.borderedProminent)
             .disabled(!hasDraftChanges || isLoading || isSaving)
-
-            Button(action: onDone) {
-                Label("Done", systemImage: "checkmark")
-            }
-            .disabled(isLoading || isSaving)
         }
         .padding(.horizontal, 28)
-        .padding(.top, 28)
-        .padding(.bottom, 18)
+        .padding(.vertical, 14)
     }
 
     private var table: some View {
@@ -99,7 +141,7 @@ struct BatchEditView: View {
                             }
                         }
                     }
-                    .frame(minWidth: 1_280, alignment: .leading)
+                    .frame(width: tableWidth, alignment: .topLeading)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 6))
                 .overlay(
@@ -109,78 +151,78 @@ struct BatchEditView: View {
             }
         }
         .padding(.horizontal, 18)
-        .padding(.vertical, 16)
+        .padding(.top, 0)
+        .padding(.bottom, 16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var headerRow: some View {
         HStack(spacing: 0) {
-            sortHeader("File", column: .file, width: 320, alignment: .leading)
-            sortHeader("Title", column: .title, width: 190, alignment: .leading)
-            sortHeader("Artist", column: .artist, width: 190, alignment: .leading)
-            sortHeader("Album", column: .album, width: 190, alignment: .leading)
-            sortHeader("Year", column: .releaseYear, width: 90, alignment: .leading)
-            sortHeader("Genre", column: .genre, width: 150, alignment: .leading)
-            sortHeader("Status", column: .status, width: 150, alignment: .leading)
+            ForEach(SortColumn.allCases, id: \.self) { column in
+                sortHeader(column)
+            }
         }
         .frame(height: 34)
     }
 
-    private func sortHeader(
-        _ title: String,
-        column: SortColumn,
-        width: CGFloat,
-        alignment: Alignment
-    ) -> some View {
-        Button {
-            sortRows(by: column)
-        } label: {
-            HStack(spacing: 4) {
-                Text(title)
-                    .font(.caption.weight(.semibold))
-                if sortColumn == column {
-                    Image(systemName: isSortAscending ? "chevron.up" : "chevron.down")
-                        .font(.caption2.weight(.semibold))
+    private func sortHeader(_ column: SortColumn) -> some View {
+        ZStack(alignment: .trailing) {
+            Button {
+                sortRows(by: column)
+            } label: {
+                HStack(spacing: 4) {
+                    Text(column.title)
+                        .font(.caption.weight(.semibold))
+                    if sortColumn == column {
+                        Image(systemName: isSortAscending ? "chevron.up" : "chevron.down")
+                            .font(.caption2.weight(.semibold))
+                    }
+                    Spacer(minLength: 0)
                 }
+                .padding(.horizontal, 8)
+                .frame(width: width(for: column), height: 34, alignment: .leading)
+                .contentShape(Rectangle())
             }
-            .frame(width: width, alignment: alignment)
-            .padding(.horizontal, 8)
+            .buttonStyle(.plain)
+            .foregroundStyle(.primary)
+
+            resizeHandle(for: column)
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.primary)
+        .frame(width: width(for: column), height: 34)
     }
 
     private func dataRow(_ row: Binding<BatchMetadataRow>) -> some View {
         let rowValue = row.wrappedValue
 
         return HStack(spacing: 0) {
-            Text(rowValue.fileName)
-                .lineLimit(1)
-                .frame(width: 320, alignment: .leading)
-                .padding(.horizontal, 8)
+            tableCell(column: .file) {
+                Text(rowValue.fileName)
+                    .lineLimit(1)
+            }
 
-            editableField(.title, text: row.title, row: rowValue)
-                .frame(width: 190, alignment: .leading)
-                .padding(.horizontal, 8)
+            tableCell(column: .title) {
+                editableField(.title, text: row.title, row: rowValue)
+            }
 
-            editableField(.artist, text: row.artist, row: rowValue)
-                .frame(width: 190, alignment: .leading)
-                .padding(.horizontal, 8)
+            tableCell(column: .artist) {
+                editableField(.artist, text: row.artist, row: rowValue)
+            }
 
-            editableField(.album, text: row.album, row: rowValue)
-                .frame(width: 190, alignment: .leading)
-                .padding(.horizontal, 8)
+            tableCell(column: .album) {
+                editableField(.album, text: row.album, row: rowValue)
+            }
 
-            editableField(.releaseYear, text: row.releaseYear, row: rowValue)
-                .frame(width: 90, alignment: .leading)
-                .padding(.horizontal, 8)
+            tableCell(column: .releaseYear) {
+                editableField(.releaseYear, text: row.releaseYear, row: rowValue)
+            }
 
-            editableField(.genre, text: row.genre, row: rowValue)
-                .frame(width: 150, alignment: .leading)
-                .padding(.horizontal, 8)
+            tableCell(column: .genre) {
+                editableField(.genre, text: row.genre, row: rowValue)
+            }
 
-            statusView(for: rowValue.status)
-                .frame(width: 150, alignment: .leading)
-                .padding(.horizontal, 8)
+            tableCell(column: .status) {
+                statusView(for: rowValue.status)
+            }
         }
         .frame(height: 34)
         .background(selection.contains(rowValue.id) ? Color.accentColor.opacity(0.16) : Color.clear)
@@ -188,6 +230,43 @@ struct BatchEditView: View {
         .onTapGesture {
             selectRow(rowValue)
         }
+    }
+
+    private func tableCell<Content: View>(
+        column: SortColumn,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        content()
+            .padding(.horizontal, 8)
+            .frame(width: width(for: column), height: 34, alignment: .leading)
+            .clipped()
+    }
+
+    private func resizeHandle(for column: SortColumn) -> some View {
+        Rectangle()
+            .fill(Color.clear)
+            .frame(width: 8, height: 34)
+            .overlay(alignment: .trailing) {
+                Rectangle()
+                    .fill(Color(nsColor: .separatorColor))
+                    .frame(width: 1)
+            }
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 2)
+                    .onChanged { value in
+                        if resizeStartWidths[column] == nil {
+                            resizeStartWidths[column] = width(for: column)
+                        }
+
+                        let startWidth = resizeStartWidths[column] ?? width(for: column)
+                        let nextWidth = max(column.minimumWidth, startWidth + value.translation.width)
+                        columnWidths[column] = nextWidth
+                    }
+                    .onEnded { _ in
+                        resizeStartWidths[column] = nil
+                    }
+            )
     }
 
     private var emptyState: some View {
@@ -204,6 +283,16 @@ struct BatchEditView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var tableWidth: CGFloat {
+        SortColumn.allCases.reduce(0) { total, column in
+            total + width(for: column)
+        }
+    }
+
+    private func width(for column: SortColumn) -> CGFloat {
+        columnWidths[column] ?? column.defaultWidth
     }
 
     private var summaryText: String {

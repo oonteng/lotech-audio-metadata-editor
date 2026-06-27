@@ -10,6 +10,9 @@
 - Added spreadsheet-style sorting to the Batch Edit table.
 - Added right-click batch field editing for selected rows.
 - Changed Batch Edit folder selection to show only direct writable audio files in the selected folder.
+- Added Single Edit / Batch Edit mode tabs.
+- Added resizable Batch Edit columns with separate drag handles.
+- Expanded Batch Edit sorting to the full header cell.
 - Kept v1.0.0 single-file editing behavior intact.
 
 ## 1.0.0

@@ -8,6 +8,9 @@ struct ContentView: View {
             SidebarView(viewModel: viewModel)
         } detail: {
             VStack(spacing: 0) {
+                modeBar
+                Divider()
+
                 switch viewModel.detailMode {
                 case .singleFile:
                     MetadataEditorView(
@@ -32,8 +35,7 @@ struct ContentView: View {
                         hasDraftChanges: viewModel.hasUnsavedBatchChanges,
                         onSave: viewModel.saveBatchChanges,
                         onDiscard: viewModel.discardBatchChanges,
-                        onReload: viewModel.reloadBatchMetadata,
-                        onDone: viewModel.leaveBatchEdit
+                        onReload: viewModel.reloadBatchMetadata
                     )
                 }
                 Divider()
@@ -53,6 +55,35 @@ struct ContentView: View {
         } message: {
             Text("You have unsaved batch edits. Save before leaving?")
         }
+    }
+
+    private var modeBar: some View {
+        HStack {
+            Picker(
+                "Mode",
+                selection: Binding(
+                    get: { viewModel.detailMode },
+                    set: { mode in
+                        switch mode {
+                        case .singleFile:
+                            viewModel.showSingleEdit()
+                        case .batchEdit:
+                            viewModel.showBatchEdit()
+                        }
+                    }
+                )
+            ) {
+                Text("Single Edit").tag(AppDetailMode.singleFile)
+                Text("Batch Edit").tag(AppDetailMode.batchEdit)
+            }
+            .pickerStyle(.segmented)
+            .frame(width: 240)
+
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(Color(nsColor: .windowBackgroundColor))
     }
 }
 

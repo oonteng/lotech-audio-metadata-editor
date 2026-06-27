@@ -1,6 +1,6 @@
 import Foundation
 
-enum AppDetailMode {
+enum AppDetailMode: Hashable {
     case singleFile
     case batchEdit
 }

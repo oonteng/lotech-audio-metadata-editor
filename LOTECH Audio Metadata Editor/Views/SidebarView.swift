@@ -24,14 +24,6 @@ struct SidebarView: View {
 
             List(selection: $viewModel.selectedItemID) {
                 Section("Library") {
-                    Label("Batch Edit", systemImage: "tablecells")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            viewModel.showBatchEdit()
-                        }
-
                     OutlineGroup(viewModel.sidebarLibraryItems, children: \.children) { item in
                         Label(item.name, systemImage: item.kind.systemImageName)
                             .tag(item.id)
