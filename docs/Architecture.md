@@ -32,6 +32,6 @@ LOTECH Audio Metadata Editor/
 - The main view model coordinates folder access, selection, reading, writing, artwork updates, rename flow, and Batch Edit mode.
 - Batch Edit reuses the existing metadata reader and writer services, keeping table edits as drafts until the user saves them.
 - Batch Edit scopes the table to the selected sidebar folder's direct writable audio files.
-- The detail area owns the Single Edit / Batch Edit mode switch so the sidebar can stay focused on folder and file navigation.
+- The sidebar owns the Single Edit / Batch Edit mode switch under Library, while the detail area focuses on the active editor.
 - The app uses Apple's native APIs and does not require third-party packages.
 - The sandbox is enabled, with user-selected read-write file access.

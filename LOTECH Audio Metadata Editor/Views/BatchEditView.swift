@@ -84,8 +84,8 @@ struct BatchEditView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
-            Divider()
             table
+            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(nsColor: .textBackgroundColor))
@@ -120,7 +120,8 @@ struct BatchEditView: View {
             .disabled(!hasDraftChanges || isLoading || isSaving)
         }
         .padding(.horizontal, 28)
-        .padding(.vertical, 14)
+        .padding(.top, 28)
+        .padding(.bottom, 10)
     }
 
     private var table: some View {
@@ -150,7 +151,7 @@ struct BatchEditView: View {
                 )
             }
         }
-        .padding(.horizontal, 18)
+        .padding(.horizontal, 24)
         .padding(.top, 0)
         .padding(.bottom, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -187,6 +188,7 @@ struct BatchEditView: View {
             .foregroundStyle(.primary)
 
             resizeHandle(for: column)
+                .zIndex(2)
         }
         .frame(width: width(for: column), height: 34)
     }
@@ -243,30 +245,21 @@ struct BatchEditView: View {
     }
 
     private func resizeHandle(for column: SortColumn) -> some View {
-        Rectangle()
-            .fill(Color.clear)
-            .frame(width: 8, height: 34)
-            .overlay(alignment: .trailing) {
-                Rectangle()
-                    .fill(Color(nsColor: .separatorColor))
-                    .frame(width: 1)
-            }
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 2)
-                    .onChanged { value in
-                        if resizeStartWidths[column] == nil {
-                            resizeStartWidths[column] = width(for: column)
-                        }
+        ColumnResizeHandle(
+            onDrag: { delta in
+                if resizeStartWidths[column] == nil {
+                    resizeStartWidths[column] = width(for: column)
+                }
 
-                        let startWidth = resizeStartWidths[column] ?? width(for: column)
-                        let nextWidth = max(column.minimumWidth, startWidth + value.translation.width)
-                        columnWidths[column] = nextWidth
-                    }
-                    .onEnded { _ in
-                        resizeStartWidths[column] = nil
-                    }
-            )
+                let startWidth = resizeStartWidths[column] ?? width(for: column)
+                let nextWidth = max(column.minimumWidth, startWidth + delta)
+                columnWidths[column] = nextWidth
+            },
+            onEnd: {
+                resizeStartWidths[column] = nil
+            }
+        )
+        .frame(width: 9, height: 34)
     }
 
     private var emptyState: some View {
@@ -498,6 +491,87 @@ private struct RightClickCatcher: NSViewRepresentable {
 
         override func rightMouseDown(with event: NSEvent) {
             onRightClick()
+        }
+    }
+}
+
+private struct ColumnResizeHandle: NSViewRepresentable {
+    let onDrag: (CGFloat) -> Void
+    let onEnd: () -> Void
+
+    func makeNSView(context: Context) -> ResizeHandleView {
+        ResizeHandleView(onDrag: onDrag, onEnd: onEnd)
+    }
+
+    func updateNSView(_ nsView: ResizeHandleView, context: Context) {
+        nsView.onDrag = onDrag
+        nsView.onEnd = onEnd
+    }
+
+    final class ResizeHandleView: NSView {
+        var onDrag: (CGFloat) -> Void
+        var onEnd: () -> Void
+        private var startX: CGFloat?
+        private var trackingAreaRef: NSTrackingArea?
+
+        init(onDrag: @escaping (CGFloat) -> Void, onEnd: @escaping () -> Void) {
+            self.onDrag = onDrag
+            self.onEnd = onEnd
+            super.init(frame: .zero)
+        }
+
+        @available(*, unavailable)
+        required init?(coder: NSCoder) {
+            nil
+        }
+
+        override func updateTrackingAreas() {
+            super.updateTrackingAreas()
+
+            if let trackingAreaRef {
+                removeTrackingArea(trackingAreaRef)
+            }
+
+            let area = NSTrackingArea(
+                rect: bounds,
+                options: [.activeAlways, .mouseEnteredAndExited, .inVisibleRect],
+                owner: self,
+                userInfo: nil
+            )
+            trackingAreaRef = area
+            addTrackingArea(area)
+        }
+
+        override func draw(_ dirtyRect: NSRect) {
+            super.draw(dirtyRect)
+
+            NSColor.separatorColor.setFill()
+            NSRect(x: bounds.maxX - 1, y: 0, width: 1, height: bounds.height).fill()
+        }
+
+        override func mouseEntered(with event: NSEvent) {
+            NSCursor.resizeLeftRight.push()
+        }
+
+        override func mouseExited(with event: NSEvent) {
+            NSCursor.pop()
+        }
+
+        override func mouseDown(with event: NSEvent) {
+            startX = event.locationInWindow.x
+        }
+
+        override func mouseDragged(with event: NSEvent) {
+            guard let startX else {
+                return
+            }
+
+            onDrag(event.locationInWindow.x - startX)
+        }
+
+        override func mouseUp(with event: NSEvent) {
+            startX = nil
+            onEnd()
         }
     }
 }

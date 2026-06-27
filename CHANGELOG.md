@@ -13,6 +13,9 @@
 - Added Single Edit / Batch Edit mode tabs.
 - Added resizable Batch Edit columns with separate drag handles.
 - Expanded Batch Edit sorting to the full header cell.
+- Moved mode tabs into the sidebar under Library.
+- Tightened Batch Edit top alignment so the table starts immediately under the title area.
+- Improved column divider drag behavior with a resize cursor.
 - Kept v1.0.0 single-file editing behavior intact.
 
 ## 1.0.0

@@ -24,6 +24,27 @@ struct SidebarView: View {
 
             List(selection: $viewModel.selectedItemID) {
                 Section("Library") {
+                    Picker(
+                        "Mode",
+                        selection: Binding(
+                            get: { viewModel.detailMode },
+                            set: { mode in
+                                switch mode {
+                                case .singleFile:
+                                    viewModel.showSingleEdit()
+                                case .batchEdit:
+                                    viewModel.showBatchEdit()
+                                }
+                            }
+                        )
+                    ) {
+                        Text("Single Edit").tag(AppDetailMode.singleFile)
+                        Text("Batch Edit").tag(AppDetailMode.batchEdit)
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .padding(.vertical, 2)
+
                     OutlineGroup(viewModel.sidebarLibraryItems, children: \.children) { item in
                         Label(item.name, systemImage: item.kind.systemImageName)
                             .tag(item.id)
