@@ -1,121 +1,312 @@
 # LOTECH Audio Metadata Editor
 
-A lightweight macOS application for viewing, organizing, and editing audio metadata, whether it is a single track or a folder of audio files.
+Organise and clean up our music library without wrestling with audio metadata.
 
-LOTECH Audio Metadata Editor combines detailed single-track editing with a spreadsheet-style Batch Edit interface, making audio collections easier to clean up without expensive music management software or technical tag-editor friction.
+A lightweight macOS application for viewing, organising and editing audio metadata, whether we're working on a single track or an entire music collection.
 
-This app is part of the **LOTECH** family of practical desktop utilities built to reduce friction and help people get real work done.
-
----
-
-## Why LOTECH Audio Metadata Editor?
-
-Managing audio metadata should feel like managing a spreadsheet, not opening hundreds of individual dialogs.
-
-LOTECH combines:
-
-- Single-file editing for detailed work
-- Spreadsheet-style batch editing for folder-level cleanup
-- Local processing with no cloud dependency
-- A clean native macOS interface
-- Practical metadata handling without exposing unnecessary technical complexity
-
-The app handles the metadata details behind the scenes so editing a music library feels more like organizing music and less like editing a database.
+LOTECH combines detailed single-track editing with a spreadsheet-style Batch Edit interface, making large music libraries practical to organise without expensive music management software or complicated tag editors.
 
 ---
 
-## Edit Like A Spreadsheet
+## Download
 
-Editing metadata should not mean opening one song, making a change, saving it, opening the next song, and repeating the process over and over.
+LOTECH Audio Metadata Editor requires **macOS 14 Sonoma or later**.
 
-Batch Edit lets you work with supported files in a folder using a spreadsheet-style table:
+### [Latest Release](https://github.com/oonteng/lotech-audio-metadata-editor/releases/latest)
 
-- Scan rows quickly
-- Sort columns
-- Resize columns
-- Select multiple rows
-- Apply selected field changes across rows
-- Save batch changes only when you are ready
+- [**Apple Silicon**](https://github.com/oonteng/lotech-audio-metadata-editor/releases/download/v1.1.0/LOTECH-AudioMetadataEditor-v1.1.0-macOS-AppleSilicon.zip) — Recommended for M1, M2, M3, M4 and later Macs
+- [**Universal**](https://github.com/oonteng/lotech-audio-metadata-editor/releases/download/v1.1.0/LOTECH-AudioMetadataEditor-v1.1.0-macOS-Universal.zip) — Works on both Apple Silicon and Intel Macs
+- [View the Release Notes](https://github.com/oonteng/lotech-audio-metadata-editor/releases/tag/v1.1.0)
+- [Download SHA-256 Checksums](https://github.com/oonteng/lotech-audio-metadata-editor/releases/download/v1.1.0/SHA256SUMS.txt)
 
-The goal is simple: make repeated metadata edits feel familiar, fast, and controlled.
+### Installation
+
+1. Download the appropriate ZIP file.
+2. Double-click the ZIP file to extract **LOTECH Audio Metadata Editor.app**.
+3. Move the application into the **Applications** folder.
+4. Launch **LOTECH Audio Metadata Editor**.
+
+The current release is not notarized. If macOS displays a security warning on first launch, right-click the application and choose **Open**.
+
+---
+
+## Less time fixing metadata. More time enjoying music.
+
+Music files quietly carry information we rarely think about.
+
+Sometimes album names are inconsistent.
+
+Sometimes artists are split into multiple spellings.
+
+Sometimes genres become a mess after years of downloading, ripping CDs, recording lectures or moving files between different applications.
+
+Cleaning up that information shouldn't require opening hundreds of files one at a time or learning technical tagging standards.
+
+We built LOTECH Audio Metadata Editor because organising our music library should feel simple again.
+
+Technology can deal with the technical details.
+
+We shouldn't have to.
+
+---
+
+## We think about music. Not metadata.
+
+When we look at an audio file, we don't think:
+
+*"Is this ID3?"*
+
+*"Is this MP4 metadata?"*
+
+*"Which tag version is this using?"*
+
+Most of us simply want to know:
+
+- What is this song?
+- Who performs it?
+- Which album does it belong to?
+- When was it released?
+- Can we find it again later?
+
+LOTECH presents metadata the way we naturally organise our music.
+
+Behind the scenes, the application quietly reads and writes the appropriate metadata standards while presenting one consistent editing experience.
+
+---
+
+## Edit like a spreadsheet
+
+This is probably our favourite feature.
+
+Editing metadata shouldn't mean opening one song, making a change, clicking **Save**, opening the next song, and repeating the same process hundreds of times.
+
+Instead, LOTECH lets us edit an entire folder the same way many of us already work every day — like a spreadsheet.
+
+Most of us grew up using Word, Excel and PowerPoint. Tables feel natural. We can scan hundreds of rows, sort columns, copy and paste values, and make changes quickly.
+
+So why are we still editing music metadata one file at a time through endless dialog boxes?
+
+We'd rather see everything in one place, make the changes, press **Save**, and get back to enjoying the music.
+
+Simple.
+
+Fast.
+
+Familiar.
+
+---
+
+## Built by someone who had the same problem
+
+This software exists because we had years of music.
+
+Albums collected over decades.
+
+CDs we ripped ourselves.
+
+Songs purchased from different stores.
+
+Voice recordings.
+
+Podcasts.
+
+Lecture recordings.
+
+Sound effects.
+
+We wanted a better way to organise everything.
+
+So we built one.
+
+If it quietly helps someone else organise their own collection too, we've achieved what we set out to do.
 
 ---
 
 ## Single Edit
 
-Single Edit is for focused work on one track.
+Sometimes we only need to work on one audio file.
 
-It shows the selected audio file, editable metadata fields, and album artwork tools in a clean native macOS interface.
+Maybe we're correcting the title of a favourite song.
 
-Editable single-file fields include:
+Adding album artwork.
 
-- File name
+Fixing the artist name.
+
+Or cleaning up metadata before sharing the file with someone else.
+
+Single Edit lets us edit metadata while viewing everything about the selected track in one place.
+
+No hunting through multiple dialog boxes.
+
+No guessing which tag field to edit.
+
+Just the information we actually care about.
+
+### Features
+
+- Clean native macOS interface
+- Artwork preview and replacement
+- Editable metadata fields
+- Read-only technical information
+- Instant metadata refresh after saving
+- Metadata validation
+
+### Editable metadata
+
 - Title
 - Artist
-- Contributing artist
+- Contributing Artist
 - Album
-- Release year
-- Composer
+- Album Artist
+- Release Year
+- Track Number
+- Disc Number
 - Genre
-- Lyrics
+- Composer
+- Comments
 - Description
-- Vibe / mood
-- Artwork, where supported
+- Lyrics
+- Mood / Vibe
+- Copyright
+- Artwork (where supported)
 
 ---
 
 ## Batch Edit
 
-Batch Edit is for folder-level cleanup.
+This is where LOTECH really shines.
 
-In v1.1.0, Batch Edit supports table-based editing for writable audio files in the selected folder.
+Most music collections don't contain ten songs.
 
-Batch Edit features include:
+They contain hundreds.
 
-- Sidebar mode switch for Single Edit / Batch Edit
-- Folder-scoped table view
+Sometimes thousands.
+
+Fixing metadata one file at a time quickly becomes repetitive and frustrating.
+
+Batch Edit was designed to solve exactly that problem.
+
+Instead of opening one file after another, we simply open a folder and edit everything in a spreadsheet.
+
+The workflow feels familiar because most of us already know how spreadsheets work.
+
+Scan the rows.
+
+Sort the columns.
+
+Select the tracks we want.
+
+Apply the changes.
+
+Save everything together when we're ready.
+
+No changes are written until we choose to save.
+
+That gives us confidence to make large edits without worrying about accidentally changing hundreds of files.
+
+### Features
+
+- Spreadsheet-style editing
+- Folder-based workflow
 - Sortable columns
 - Resizable columns
 - Multi-row selection
-- Right-click batch field editing for selected rows
-- Draft changes that are not written until Save Changes is clicked
-- Unsaved-change protection before leaving Batch Edit
+- Batch field editing
+- Draft changes before saving
+- Unsaved-change protection
+- Fast keyboard navigation
 
-Batch editable fields include:
+### Batch editable metadata
+
+Current release supports batch editing of:
 
 - Title
 - Artist
 - Album
-- Year
+- Release Year
 - Genre
+
+More fields will be added in future releases.
+
+---
+
+## Artwork Management
+
+Album artwork is part of the listening experience.
+
+It helps us recognise albums at a glance and keeps our music library looking organised.
+
+LOTECH lets us replace or update artwork for supported audio formats without needing a separate tagging application.
+
+The goal isn't to become a dedicated artwork manager.
+
+It's simply to make common tasks feel effortless.
+
+---
+
+## The technical details are still there
+
+Sometimes we do want to inspect the technical side of an audio file.
+
+Codec.
+
+Bitrate.
+
+Sample rate.
+
+Channels.
+
+Duration.
+
+Metadata versions.
+
+No problem.
+
+LOTECH doesn't hide the technical information.
+
+We simply choose not to overwhelm us with everything the moment we open a file.
+
+The information is there when we need it, and quietly stays out of the way when we don't.
 
 ---
 
 ## Local First
 
-All metadata editing happens locally on your Mac.
+Our music library stays on our computer.
 
-- No audio files are uploaded.
-- No cloud processing is required.
-- No subscriptions.
-- No accounts.
-- No hidden AI provider or API key dependency.
+Metadata editing happens locally.
 
-Future AI-assisted features, if introduced, will remain optional.
+No cloud processing.
+
+No subscriptions.
+
+No accounts.
+
+No hidden AI provider.
+
+No API keys.
+
+Our music collection stays exactly where it belongs.
+
+Future AI-assisted features, if introduced, will always remain optional.
 
 ---
 
-## Supported Formats
+## Technical Details
 
-Writable metadata currently supports:
+LOTECH Audio Metadata Editor supports the metadata standards used by modern music players, operating systems and audio management software.
+
+### Supported writable formats
 
 - MP3
 - M4A
 - MP4
 
-Some readable formats may appear in the library but remain read-only unless a write path is explicitly supported.
+### Read-only formats
 
-Read-only formats may include:
+Some audio formats can be opened for viewing but are currently treated as read-only.
+
+These may include:
 
 - WAV
 - AIFF / AIF
@@ -123,47 +314,55 @@ Read-only formats may include:
 - ALAC
 - FLAC
 
+Support for additional writable formats will continue to expand in future releases.
+
 ---
 
-## ID3 Handling
+### Metadata compatibility
 
-MP3 writes use ID3v2.3 with UTF-16 text frames for broad compatibility.
+Metadata is written using widely supported industry standards, making files compatible with applications such as:
 
-The app replaces known editable frames while preserving unrelated frames where possible. For users, this means MP3 metadata is saved in a practical modern format without needing to choose between ID3 versions manually.
+- Apple Music
+- Finder
+- MusicBee
+- foobar2000
+- MediaMonkey
+- Mp3tag
+- VLC Media Player
+- and many other applications that support standard audio metadata.
+
+For MP3 files, LOTECH writes metadata using **ID3v2.3** with **UTF-16** text encoding to maximise compatibility across different operating systems and music players.
+
+Whenever possible, only the editable metadata fields are updated while unrelated metadata is preserved.
 
 ---
 
 ## Current Status
 
-Current release: `v1.1.0`
-
-Release headline: Batch Edit mode with spreadsheet-style metadata editing.
-
-Download the latest release:
-
-- [LOTECH Audio Metadata Editor v1.1.0](https://github.com/oonteng/lotech-audio-metadata-editor/releases/tag/v1.1.0)
-
 Current release includes:
 
 - Single Edit mode
-- Spreadsheet-style Batch Edit mode
-- Folder-scoped batch editing
-- Sortable and resizable batch columns
-- Selected-row batch field editing
-- Artwork editing for supported files
-- ID3v2.3 MP3 writing
+- Spreadsheet-style Batch Edit
+- Folder-scoped editing
+- Sortable columns
+- Resizable columns
+- Multi-row selection
+- Batch field editing
+- Artwork editing for supported formats
+- Draft changes before saving
+- Unsaved-change protection
+- MP3 metadata writing
 - M4A / MP4 metadata writing
 
 ---
 
 ## Known Limitations
 
-- This app is provided as-is.
 - Writable metadata depends on the audio format.
-- Some readable formats are treated as read-only.
-- Batch editing should be done carefully.
-- Always test with copied files before editing valuable originals.
-- The app is not notarized yet, so macOS may require right-click > Open on first launch.
+- Some supported formats are currently read-only.
+- Artwork support varies between audio formats.
+- Different music players may display metadata differently depending on the metadata standard they support.
+- Always keep backups before performing large batch operations.
 
 ---
 
@@ -171,52 +370,122 @@ Current release includes:
 
 Future directions include:
 
-- Additional audio formats
-- More batch-editable fields
+- Support for additional writable audio formats
+- More batch-editable metadata fields
 - Batch rename
-- Search and filtering
-- Undo / redo
-- Better artwork workflows
+- Search
+- Filters
+- Undo / Redo
+- Smarter artwork management
 - MusicBrainz lookup
 - Optional AI-assisted metadata suggestions
+- LOTECH Metadata Engine
 - LOTECH AI SDK integration
-- Optional Council SDK workflow
+
+Our goal isn't to become the most feature-rich audio tag editor.
+
+Our goal is to remove the friction from organising our music library, one practical improvement at a time.
 
 ---
 
-## Developer Documentation
+## About LOTECH
 
-- [Architecture](docs/Architecture.md)
-- [Metadata handling](docs/Metadata.md)
+LOTECH builds practical software that quietly removes friction from everyday work.
+
+We don't chase trends.
+
+We don't build software simply because a new technology appears.
+
+We build software because we ran into a real problem ourselves and believed there had to be a better way.
+
+Many of our projects begin with the same question:
+
+*"Why is this still so difficult?"*
+
+Sometimes the answer is decades of legacy software.
+
+Sometimes it's complicated workflows that everyone has simply learned to tolerate.
+
+Sometimes it's software that exposes technical complexity instead of quietly handling it.
+
+That's where LOTECH comes in.
+
+We quietly solve annoying problems that many of us have simply learned to live with.
+
+Instead of adding more technology, we try to make technology disappear into the background so we can focus on the work itself.
+
+We don't build software to impress people.
+
+We build software that quietly helps us finish the job.
+
+Technology can deal with the technical details.
+
+We shouldn't have to.
 
 ---
 
-## LOTECH Philosophy
+## Part of the LOTECH family
 
-Technology should work the way people think, not the way computers store data.
+LOTECH Audio Metadata Editor is part of a growing collection of focused, local-first desktop applications built around the same philosophy.
 
-LOTECH builds focused desktop tools that solve everyday problems without unnecessary complexity.
+Current projects include:
 
-If software can quietly handle technical complexity for us, it should.
+- LOTECH Photo Metadata Editor
+- LOTECH Audio Metadata Editor
+- LOTECH Text Editor
 
-That gives us something more valuable than another feature.
+More focused tools are on the way.
 
-It gives us back our time.
+Every application is designed with the same goal:
+
+Reduce friction.
+
+Respect our privacy.
+
+Stay fast.
+
+Stay simple.
+
+Help us get real work done.
 
 ---
 
 ## License
 
-Released under the MIT License.
+Released under the **MIT License**.
 
-See [LICENSE](LICENSE).
+See the **LICENSE** file for details.
 
 ---
 
 ## Disclaimer
 
-This software is provided as-is, without warranty of any kind.
+This software is provided **as-is**, without warranty of any kind.
 
-The author is not responsible for any data loss, file corruption, metadata damage, loss of artwork, compatibility issues, business loss, or any other direct or indirect damage caused by using this software.
+Although every effort has been made to keep metadata handling safe and reliable, different audio formats and media players may interpret metadata differently.
 
-Use this app at your own risk. Back up your audio files before editing.
+We strongly recommend keeping backups of valuable audio files before performing large batch edits.
+
+The author shall not be liable for any loss of data, file corruption, metadata incompatibility, artwork loss, business interruption or any other direct or indirect damages arising from the use of this software.
+
+Use this application at your own risk.
+
+---
+
+## Acknowledgements
+
+LOTECH Audio Metadata Editor is built with appreciation for the many open standards and open-source projects that have made modern metadata handling possible.
+
+Their work allows applications like this to remain compatible across different operating systems, music players and media management software.
+
+Thank you to everyone who contributes to making open software better.
+
+---
+
+## Thank You
+
+Thank you for trying LOTECH Audio Metadata Editor.
+
+We hope it quietly makes organising your music library just a little easier.
+
+If it saves us even a few minutes every time we clean up our collection, then it has already achieved exactly what we built it to do.
